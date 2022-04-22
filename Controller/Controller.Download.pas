@@ -3,7 +3,8 @@ unit Controller.Download;
 interface
 
 uses
-  Model.Download;
+  Model.Download,
+  Model.ObserverInterface;
 
 Type
 
@@ -19,7 +20,7 @@ Type
     FDownload: IDownload;
 
   public
-    constructor Create;
+    constructor Create(const ASenderForm: IObserver);
     destructor Destroy; override;
 
     function Download: IDownload;
@@ -30,9 +31,10 @@ implementation
 
 { TDownloadController }
 
-constructor TDownloadController.Create;
+constructor TDownloadController.Create(const ASenderForm: IObserver);
 begin
   FDownload := TDownload.Create;
+  TDownload(FDownload).AdicionarObserver(ASenderForm);
 end;
 
 destructor TDownloadController.Destroy;

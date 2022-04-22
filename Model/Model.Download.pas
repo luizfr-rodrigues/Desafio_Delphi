@@ -4,7 +4,10 @@ interface
 
 uses
   System.Classes,
-  Model.DownloadHTTP;
+  Generics.Collections,
+
+  Model.DownloadHTTP,
+  Model.ObserverInterface;
 
 Type
   IDownload = interface
@@ -25,8 +28,9 @@ Type
     function PercentualBaixado: Double;
   end;
 
-  TDownload = class(TInterfacedObject, IDownload)
+  TDownload = class(TInterfacedObject, IDownload, ISubject)
   private
+    FObservers: TList<IObserver>;
     FDownloadHTTP: IDownloadHTTP;
 
     FFinalizado: Boolean;
@@ -37,6 +41,7 @@ Type
     function GetPathArquivoNovo(const ACountArquivo: Integer = 0): string;
 
     procedure AtualizarProgresso(const Sender: TObject);
+    procedure Notificar;
 
   public
     constructor Create;
@@ -55,6 +60,8 @@ Type
     function BaixadoAsMegabyte: Double;
 
     function PercentualBaixado: Double;
+
+    procedure AdicionarObserver(Observer: IObserver);
   end;
 
 implementation
@@ -82,6 +89,8 @@ end;
 
 constructor TDownload.Create;
 begin
+  FObservers := TList<IObserver>.Create;
+
   FDownloadHTTP := TDownloadHTTP.Create;
   FDownloadHTTP.SetProcNotificar(AtualizarProgresso);
 
@@ -90,6 +99,7 @@ end;
 
 destructor TDownload.Destroy;
 begin
+  FreeAndNil(FObservers);
 
   inherited;
 end;
@@ -158,10 +168,19 @@ begin
       End;
 
       RenameFile(GetPathArquivoTemp, GetPathArquivoNovo);
+      Self.Notificar;
 
     end);
 
   Task.Start;
+end;
+
+procedure TDownload.Notificar;
+var
+  Observer: IObserver;
+begin
+  for Observer in FObservers do
+    Observer.Atualizar;
 end;
 
 function TDownload.PercentualBaixado: Double;
@@ -169,9 +188,14 @@ begin
   Result := ( (Self.BaixadoAsByte / Self.TamanhoArquivoAsByte) * 100);
 end;
 
+procedure TDownload.AdicionarObserver(Observer: IObserver);
+begin
+  FObservers.Add(Observer);
+end;
+
 procedure TDownload.AtualizarProgresso(const Sender: TObject);
 begin
-
+  Self.Notificar;
 end;
 
 function TDownload.TamanhoArquivoAsByte: Int64;

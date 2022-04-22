@@ -15,10 +15,11 @@ uses
   Vcl.StdCtrls,
   Vcl.ComCtrls,
 
-  Controller.Download;
+  Controller.Download,
+  Model.ObserverInterface;
 
 type
-  TMainForm = class(TForm)
+  TMainForm = class(TForm, IObserver)
     BtnIniciar: TButton;
     BtnParar: TButton;
     EdtLink: TEdit;
@@ -34,6 +35,8 @@ type
 
     FController: IDownloadController;
 
+    procedure Atualizar;
+
   public
     { Public declarations }
   end;
@@ -45,14 +48,28 @@ implementation
 
 {$R *.dfm}
 
+procedure TMainForm.Atualizar;
+begin
+  ProgressBar1.Max := FController.Download.TamanhoArquivoAsByte;
+  ProgressBar1.Position := FController.Download.BaixadoAsByte;
+
+  Label1.Caption := FloatToStr(FController.Download.TamanhoArquivoAsByte);
+  Label2.Caption := FloatToStr(FController.Download.BaixadoAsByte);
+
+  if FController.Download.Finalizado then
+    ShowMessage('Download concluído');
+end;
+
 procedure TMainForm.BtnIniciarClick(Sender: TObject);
 begin
+  ProgressBar1.Position := 0;
+
   FController.Iniciar(EdtLink.Text);
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  FController := TDownloadController.Create;
+  FController := TDownloadController.Create(Self);
 end;
 
 initialization
