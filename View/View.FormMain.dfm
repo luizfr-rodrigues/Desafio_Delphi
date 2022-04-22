@@ -12,6 +12,7 @@ object MainForm: TMainForm
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -48,6 +49,7 @@ object MainForm: TMainForm
     Height = 25
     Caption = 'Iniciar'
     TabOrder = 0
+    OnClick = BtnIniciarClick
   end
   object BtnParar: TButton
     Left = 170
@@ -74,8 +76,6 @@ object MainForm: TMainForm
     Height = 25
     Align = alBottom
     TabOrder = 3
-    ExplicitTop = 280
-    ExplicitWidth = 628
   end
   object BtnPercentual: TButton
     Left = 89

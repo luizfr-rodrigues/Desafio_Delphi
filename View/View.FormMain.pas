@@ -13,7 +13,9 @@ uses
   Vcl.Forms,
   Vcl.Dialogs,
   Vcl.StdCtrls,
-  Vcl.ComCtrls;
+  Vcl.ComCtrls,
+
+  Controller.Download;
 
 type
   TMainForm = class(TForm)
@@ -25,8 +27,13 @@ type
     Label2: TLabel;
     BtnPercentual: TButton;
     Label3: TLabel;
+    procedure FormCreate(Sender: TObject);
+    procedure BtnIniciarClick(Sender: TObject);
   private
     { Private declarations }
+
+    FController: IDownloadController;
+
   public
     { Public declarations }
   end;
@@ -37,5 +44,18 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TMainForm.BtnIniciarClick(Sender: TObject);
+begin
+  FController.Iniciar(EdtLink.Text);
+end;
+
+procedure TMainForm.FormCreate(Sender: TObject);
+begin
+  FController := TDownloadController.Create;
+end;
+
+initialization
+  ReportMemoryLeaksOnShutdown := DebugHook <> 0;
 
 end.
