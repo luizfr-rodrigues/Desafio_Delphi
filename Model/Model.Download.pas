@@ -185,7 +185,10 @@ end;
 
 function TDownload.PercentualBaixado: Double;
 begin
-  Result := ( (Self.BaixadoAsByte / Self.TamanhoArquivoAsByte) * 100);
+  Result := 0;
+
+  if Self.TamanhoArquivoAsByte > 0 then
+    Result := ( (Self.BaixadoAsByte / Self.TamanhoArquivoAsByte) * 100);
 end;
 
 procedure TDownload.AdicionarObserver(Observer: IObserver);

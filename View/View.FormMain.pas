@@ -30,6 +30,7 @@ type
     Label3: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure BtnIniciarClick(Sender: TObject);
+    procedure BtnPercentualClick(Sender: TObject);
   private
     { Private declarations }
 
@@ -65,6 +66,12 @@ begin
   ProgressBar1.Position := 0;
 
   FController.Iniciar(EdtLink.Text);
+end;
+
+procedure TMainForm.BtnPercentualClick(Sender: TObject);
+begin
+  ShowMessage('Percentual atual do download: ' +
+              FormatFloat('###,##0.00 %', FController.Download.PercentualBaixado));
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);

@@ -84,5 +84,6 @@ object MainForm: TMainForm
     Height = 25
     Caption = 'Percentual'
     TabOrder = 4
+    OnClick = BtnPercentualClick
   end
 end
