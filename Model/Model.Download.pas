@@ -7,15 +7,18 @@ uses
   Generics.Collections,
 
   Model.DownloadHTTP,
-  Model.ObserverInterface;
+  Model.ObserverInterface,
+  Model.DownloadStatus;
 
 Type
   IDownload = interface
     ['{231F7092-41B6-4851-8229-49B9D5BF15F8}']
 
     procedure Iniciar(const ALink: string);
+    procedure Parar;
 
-    function Finalizado: Boolean;
+    function Concluido: Boolean;
+    function Interrompido: Boolean;
 
     function TamanhoArquivoAsByte: Int64;
     function TamanhoArquivoAsKilobyte: Double;
@@ -31,9 +34,9 @@ Type
   TDownload = class(TInterfacedObject, IDownload, ISubject)
   private
     FObservers: TList<IObserver>;
-    FDownloadHTTP: IDownloadHTTP;
 
-    FFinalizado: Boolean;
+    FControleStatus: IDownloadControleStatus;
+    FDownloadHTTP: IDownloadHTTP;
 
     function GetNomeArquivoTemp: string;
     function GetPathArquivoTemp: string;
@@ -48,8 +51,10 @@ Type
     destructor Destroy; override;
 
     procedure Iniciar(const ALink: string);
+    procedure Parar;
 
-    function Finalizado: Boolean;
+    function Concluido: Boolean;
+    function Interrompido: Boolean;
 
     function TamanhoArquivoAsByte: Int64;
     function TamanhoArquivoAsKilobyte: Double;
@@ -91,10 +96,10 @@ constructor TDownload.Create;
 begin
   FObservers := TList<IObserver>.Create;
 
-  FDownloadHTTP := TDownloadHTTP.Create;
-  FDownloadHTTP.SetProcNotificar(AtualizarProgresso);
+  FControleStatus := TDownloadControleStatus.Create;
 
-  FFinalizado := False;
+  FDownloadHTTP := TDownloadHTTP.Create(FControleStatus);
+  FDownloadHTTP.SetProcNotificar(AtualizarProgresso);
 end;
 
 destructor TDownload.Destroy;
@@ -104,9 +109,9 @@ begin
   inherited;
 end;
 
-function TDownload.Finalizado: Boolean;
+function TDownload.Concluido: Boolean;
 begin
-  Result := FFinalizado;
+  Result := FControleStatus.StatusAtual = dsConcluido;
 end;
 
 function TDownload.GetNomeArquivoTemp: string;
@@ -150,6 +155,12 @@ procedure TDownload.Iniciar(const ALink: string);
 var
   Task: ITask;
 begin
+  if ALink.IsEmpty then
+    raise Exception.Create('Link para download não foi informado');
+
+  if FControleStatus.StatusAtual = dsIniciado then
+    raise Exception.Create('Já existe um download em andamento');
+
   Task := TTask.Create(
     procedure
     var
@@ -157,22 +168,34 @@ begin
     begin
 
       Try
-        FFinalizado := False;
+        FControleStatus.AlterarStatus(dsIniciado);
         Arquivo := TFileStream.Create(GetPathArquivoTemp, fmCreate);
 
         FDownloadHTTP.Executar(ALink, Arquivo);
 
       Finally
-        FFinalizado := True;
         FreeAndNil(Arquivo);
       End;
 
-      RenameFile(GetPathArquivoTemp, GetPathArquivoNovo);
-      Self.Notificar;
+      if FControleStatus.StatusAtual = dsIniciado then
+      begin
+        RenameFile(GetPathArquivoTemp, GetPathArquivoNovo);
+
+        FControleStatus.AlterarStatus(dsConcluido);
+        Self.Notificar;
+      end
+
+      else if FControleStatus.StatusAtual = dsInterrompido then
+        DeleteFile(GetPathArquivoTemp);
 
     end);
 
   Task.Start;
+end;
+
+function TDownload.Interrompido: Boolean;
+begin
+  Result := FControleStatus.StatusAtual = dsInterrompido;
 end;
 
 procedure TDownload.Notificar;
@@ -181,6 +204,14 @@ var
 begin
   for Observer in FObservers do
     Observer.Atualizar;
+end;
+
+procedure TDownload.Parar;
+begin
+  if FControleStatus.StatusAtual <> dsIniciado then
+    raise Exception.Create('Não existe nenhum download em andamento');
+
+  FControleStatus.AlterarStatus(dsInterrompido);
 end;
 
 function TDownload.PercentualBaixado: Double;

@@ -31,6 +31,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure BtnIniciarClick(Sender: TObject);
     procedure BtnPercentualClick(Sender: TObject);
+    procedure BtnPararClick(Sender: TObject);
   private
     { Private declarations }
 
@@ -57,15 +58,35 @@ begin
   Label1.Caption := FloatToStr(FController.Download.TamanhoArquivoAsByte);
   Label2.Caption := FloatToStr(FController.Download.BaixadoAsByte);
 
-  if FController.Download.Finalizado then
-    ShowMessage('Download concluído');
+  if FController.Download.Concluido then
+    ShowMessage('Download concluído')
+
+  else if FController.Download.Interrompido then
+    ShowMessage('Download interrompido');
 end;
 
 procedure TMainForm.BtnIniciarClick(Sender: TObject);
 begin
   ProgressBar1.Position := 0;
 
-  FController.Iniciar(EdtLink.Text);
+  Try
+    FController.Iniciar(EdtLink.Text);
+
+  Except
+    on E: Exception do
+      ShowMessage(E.Message);
+  End;
+end;
+
+procedure TMainForm.BtnPararClick(Sender: TObject);
+begin
+  Try
+    FController.Parar;
+
+  Except
+    on E: Exception do
+      ShowMessage(E.Message);
+  End;
 end;
 
 procedure TMainForm.BtnPercentualClick(Sender: TObject);

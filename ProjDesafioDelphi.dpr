@@ -6,7 +6,8 @@ uses
   Model.DownloadHTTP in 'Model\Model.DownloadHTTP.pas',
   Model.Download in 'Model\Model.Download.pas',
   Controller.Download in 'Controller\Controller.Download.pas',
-  Model.ObserverInterface in 'Model\Model.ObserverInterface.pas';
+  Model.ObserverInterface in 'Model\Model.ObserverInterface.pas',
+  Model.DownloadStatus in 'Model\Model.DownloadStatus.pas';
 
 {$R *.res}
 

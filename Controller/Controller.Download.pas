@@ -12,7 +12,9 @@ Type
     ['{81122FE9-4312-40CE-9764-0C160DECF412}']
 
     function Download: IDownload;
+
     procedure Iniciar(const ALink: string);
+    procedure Parar;
   end;
 
   TDownloadController = class(TInterfacedObject, IDownloadController)
@@ -24,7 +26,9 @@ Type
     destructor Destroy; override;
 
     function Download: IDownload;
+
     procedure Iniciar(const ALink: string);
+    procedure Parar;
   end;
 
 implementation
@@ -51,6 +55,11 @@ end;
 procedure TDownloadController.Iniciar(const ALink: string);
 begin
   FDownload.Iniciar(ALink);
+end;
+
+procedure TDownloadController.Parar;
+begin
+  FDownload.Parar;
 end;
 
 end.

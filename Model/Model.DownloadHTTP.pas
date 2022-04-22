@@ -5,7 +5,9 @@ interface
 uses
   System.Classes,
   System.Net.HttpClientComponent,
-  System.Net.HttpClient;
+  System.Net.HttpClient,
+
+  Model.DownloadStatus;
 
 Type
 
@@ -26,6 +28,8 @@ Type
   TDownloadHTTP = class(TInterfacedObject, IDownloadHTTP)
   private
     FHTTPClient: TNetHTTPClient;
+
+    FControleStatus: IDownloadControleStatus;
     FProcNotificar: TNotificarProgresso;
 
     FTamanhoArquivoEmBytes: Int64;
@@ -41,7 +45,7 @@ Type
     procedure ExtrairNomeArquivoResponse(const AHTTPResponse: IHTTPResponse);
 
   public
-    constructor Create;
+    constructor Create(const AControleStatus: IDownloadControleStatus);
     destructor Destroy; override;
 
     procedure Executar(const ALink: string; const AStream: TStream);
@@ -71,10 +75,12 @@ begin
   Result := FBaixadoEmBytes;
 end;
 
-constructor TDownloadHTTP.Create;
+constructor TDownloadHTTP.Create(const AControleStatus: IDownloadControleStatus);
 begin
   FHTTPClient := TNetHTTPClient.Create(nil);
   FHTTPClient.OnReceiveData := HTTPClientOnReceiveData;
+
+  FControleStatus := AControleStatus;
 
   FProcNotificar := nil;
 end;
@@ -89,6 +95,8 @@ end;
 procedure TDownloadHTTP.HTTPClientOnReceiveData(const Sender: TObject; AContentLength, AReadCount: Int64;
                                                 var AAbort: Boolean);
 begin
+  AAbort := FControleStatus.StatusAtual = dsInterrompido;
+
   FTamanhoArquivoEmBytes := AContentLength;
   FBaixadoEmBytes := AReadCount;
 

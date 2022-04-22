@@ -58,6 +58,7 @@ object MainForm: TMainForm
     Height = 25
     Caption = 'Parar'
     TabOrder = 1
+    OnClick = BtnPararClick
   end
   object EdtLink: TEdit
     Left = 8
