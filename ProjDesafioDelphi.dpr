@@ -2,7 +2,8 @@ program ProjDesafioDelphi;
 
 uses
   Vcl.Forms,
-  View.FormMain in 'View\View.FormMain.pas' {MainForm};
+  View.FormMain in 'View\View.FormMain.pas' {MainForm},
+  Model.DownloadHTTP in 'Model\Model.DownloadHTTP.pas';
 
 {$R *.res}
 
