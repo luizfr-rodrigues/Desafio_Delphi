@@ -1,0 +1,6 @@
+
+__history/
+*.dcu
+Win32/Debug/ProjDesafioDelphi.exe
+*.identcache
+*.local
