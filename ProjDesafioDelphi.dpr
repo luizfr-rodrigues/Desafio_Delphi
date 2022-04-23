@@ -8,7 +8,9 @@ uses
   Controller.Download in 'Controller\Controller.Download.pas',
   Model.ObserverInterface in 'Model\Model.ObserverInterface.pas',
   Model.DownloadStatus in 'Model\Model.DownloadStatus.pas',
-  Model.DownloadConst in 'Model\Model.DownloadConst.pas';
+  Model.DownloadConst in 'Model\Model.DownloadConst.pas',
+  DAO.DMConexaoBD in 'Model\DAO.DMConexaoBD.pas' {DMConexaoBD: TDataModule},
+  Model.DownloadLog in 'Model\Model.DownloadLog.pas';
 
 {$R *.res}
 
@@ -16,5 +18,6 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TDMConexaoBD, DMConexaoBD);
   Application.Run;
 end.

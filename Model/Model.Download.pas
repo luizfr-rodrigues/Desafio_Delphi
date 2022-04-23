@@ -9,7 +9,8 @@ uses
   Model.DownloadHTTP,
   Model.ObserverInterface,
   Model.DownloadStatus,
-  Model.DownloadConst;
+  Model.DownloadConst,
+  Model.DownloadLog;
 
 Type
   IDownload = interface
@@ -38,6 +39,8 @@ Type
     FControleStatus: IDownloadControleStatus;
     FDownloadHTTP: IDownloadHTTP;
 
+    FLog: IDownloadLog;
+
     function GetNomeArquivoTemp: string;
     function GetPathArquivoTemp: string;
 
@@ -45,6 +48,9 @@ Type
 
     procedure AtualizarProgresso(const Sender: TObject);
     procedure Notificar;
+
+    procedure SalvarLog(const AURL: string);
+    procedure SalvarFinalizacaoLog;
 
   public
     constructor Create;
@@ -99,6 +105,8 @@ begin
 
   FDownloadHTTP := TDownloadHTTP.Create(FControleStatus);
   FDownloadHTTP.SetProcNotificar(AtualizarProgresso);
+
+  FLog := TDownloadLog.Create;
 end;
 
 destructor TDownload.Destroy;
@@ -162,8 +170,10 @@ begin
     begin
 
       Try
-        FControleStatus.AlterarStatus(dsIniciado);
         Arquivo := TFileStream.Create(GetPathArquivoTemp, fmCreate);
+
+        FControleStatus.AlterarStatus(dsIniciado);
+        SalvarLog(ALink);
 
         FDownloadHTTP.Executar(ALink, Arquivo);
 
@@ -176,6 +186,8 @@ begin
         RenameFile(GetPathArquivoTemp, GetPathArquivoNovo);
 
         FControleStatus.AlterarStatus(dsConcluido);
+        SalvarFinalizacaoLog;
+
         Self.Notificar;
       end
 
@@ -209,6 +221,22 @@ begin
 
   if Self.TamanhoArquivoAsByte > 0 then
     Result := ( (Self.BaixadoAsByte / Self.TamanhoArquivoAsByte) * 100);
+end;
+
+procedure TDownload.SalvarFinalizacaoLog;
+begin
+  FLog.DataFim := Now;
+  FLog.Atualizar;
+end;
+
+procedure TDownload.SalvarLog(const AURL: string);
+begin
+  FLog.Codigo := 0;
+  FLog.URL := AURL;
+  FLog.DataInicio := Now;
+  FLog.DataFim := 0;
+
+  FLog.Salvar;
 end;
 
 function TDownload.Status: TDownloadStatus;
