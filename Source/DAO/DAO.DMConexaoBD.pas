@@ -10,8 +10,8 @@ uses
 
 type
   TDMConexaoBD = class(TDataModule)
-    FDConnection1: TFDConnection;
-    FDPhysSQLiteDriverLink1: TFDPhysSQLiteDriverLink;
+    FDConnection: TFDConnection;
+    FDPhysSQLiteDriverLink: TFDPhysSQLiteDriverLink;
     FDQueryExec: TFDQuery;
   private
     { Private declarations }

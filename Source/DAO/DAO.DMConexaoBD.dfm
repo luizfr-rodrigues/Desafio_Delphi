@@ -2,7 +2,7 @@ object DMConexaoBD: TDMConexaoBD
   OldCreateOrder = False
   Height = 306
   Width = 435
-  object FDConnection1: TFDConnection
+  object FDConnection: TFDConnection
     Params.Strings = (
       'Database=C:\Projetos\desafio_delphi\Database\Desafio.db3'
       'DriverID=SQLite')
@@ -10,12 +10,12 @@ object DMConexaoBD: TDMConexaoBD
     Left = 72
     Top = 56
   end
-  object FDPhysSQLiteDriverLink1: TFDPhysSQLiteDriverLink
+  object FDPhysSQLiteDriverLink: TFDPhysSQLiteDriverLink
     Left = 72
     Top = 128
   end
   object FDQueryExec: TFDQuery
-    Connection = FDConnection1
+    Connection = FDConnection
     SQL.Strings = (
       'Select * From LOGDOWNLOAD')
     Left = 232

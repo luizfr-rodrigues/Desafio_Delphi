@@ -1,9 +1,9 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  Caption = 'MainForm'
-  ClientHeight = 245
-  ClientWidth = 704
+  Caption = 'Principal'
+  ClientHeight = 281
+  ClientWidth = 724
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,23 +16,9 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
-    Left = 20
-    Top = 168
-    Width = 31
-    Height = 13
-    Caption = 'Label1'
-  end
-  object Label2: TLabel
-    Left = 20
-    Top = 187
-    Width = 31
-    Height = 13
-    Caption = 'Label2'
-  end
   object Label3: TLabel
     Left = 8
-    Top = 29
+    Top = 13
     Width = 22
     Height = 16
     Caption = 'Link'
@@ -45,26 +31,26 @@ object MainForm: TMainForm
   end
   object BtnIniciar: TButton
     Left = 8
-    Top = 112
-    Width = 75
+    Top = 59
+    Width = 150
     Height = 25
-    Caption = 'Iniciar'
+    Caption = 'Iniciar Download'
     TabOrder = 0
     OnClick = BtnIniciarClick
   end
   object BtnParar: TButton
-    Left = 170
-    Top = 112
-    Width = 75
+    Left = 164
+    Top = 59
+    Width = 150
     Height = 25
-    Caption = 'Parar'
+    Caption = 'Parar download'
     TabOrder = 1
     OnClick = BtnPararClick
   end
   object EdtLink: TEdit
     Left = 8
-    Top = 48
-    Width = 612
+    Top = 32
+    Width = 708
     Height = 21
     TabOrder = 2
     Text = 
@@ -73,19 +59,30 @@ object MainForm: TMainForm
   end
   object ProgressBar1: TProgressBar
     Left = 0
-    Top = 220
-    Width = 704
+    Top = 256
+    Width = 724
     Height = 25
     Align = alBottom
     TabOrder = 3
+    ExplicitTop = 220
+    ExplicitWidth = 704
   end
   object BtnPercentual: TButton
-    Left = 89
-    Top = 112
-    Width = 75
+    Left = 566
+    Top = 59
+    Width = 150
     Height = 25
-    Caption = 'Percentual'
+    Caption = 'Exibir mensagem'
     TabOrder = 4
     OnClick = BtnPercentualClick
+  end
+  object BtnHistorico: TButton
+    Left = 8
+    Top = 138
+    Width = 150
+    Height = 25
+    Caption = 'Exibir hist'#243'rico de downloads'
+    TabOrder = 5
+    OnClick = BtnHistoricoClick
   end
 end

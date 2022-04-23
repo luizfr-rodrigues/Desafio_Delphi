@@ -24,15 +24,15 @@ type
     BtnParar: TButton;
     EdtLink: TEdit;
     ProgressBar1: TProgressBar;
-    Label1: TLabel;
-    Label2: TLabel;
     BtnPercentual: TButton;
     Label3: TLabel;
+    BtnHistorico: TButton;
     procedure FormCreate(Sender: TObject);
     procedure BtnIniciarClick(Sender: TObject);
     procedure BtnPercentualClick(Sender: TObject);
     procedure BtnPararClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure BtnHistoricoClick(Sender: TObject);
   private
     { Private declarations }
 
@@ -53,21 +53,24 @@ implementation
 {$R *.dfm}
 
 uses
-  Model.DownloadConst;
+  Model.DownloadConst,
+  View.HistoricoDownloadForm;
 
 procedure TMainForm.Atualizar;
 begin
   ProgressBar1.Max := FController.Download.TamanhoArquivoAsByte;
   ProgressBar1.Position := FController.Download.BaixadoAsByte;
 
-  Label1.Caption := FloatToStr(FController.Download.TamanhoArquivoAsByte);
-  Label2.Caption := FloatToStr(FController.Download.BaixadoAsByte);
-
   if FController.Download.Status = dsConcluido then
     ShowMessage('Download concluído')
 
   else if FController.Download.Status = dsInterrompido then
     ShowMessage('Download interrompido');
+end;
+
+procedure TMainForm.BtnHistoricoClick(Sender: TObject);
+begin
+  FormHistoricoDownload.Abrir;
 end;
 
 procedure TMainForm.BtnIniciarClick(Sender: TObject);
