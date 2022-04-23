@@ -2,9 +2,10 @@ unit Model.DownloadStatus;
 
 interface
 
-Type
+uses
+  Model.DownloadConst;
 
-  TDownloadStatus = (dsAguardando, dsIniciado, dsInterrompido, dsConcluido);
+Type
 
   IDownloadControleStatus = interface
     ['{F5801CFA-F51E-4F29-BD84-62E0E8F5D214}']

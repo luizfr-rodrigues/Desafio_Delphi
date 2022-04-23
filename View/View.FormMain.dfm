@@ -12,6 +12,7 @@ object MainForm: TMainForm
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13

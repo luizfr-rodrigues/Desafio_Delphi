@@ -8,7 +8,8 @@ uses
 
   Model.DownloadHTTP,
   Model.ObserverInterface,
-  Model.DownloadStatus;
+  Model.DownloadStatus,
+  Model.DownloadConst;
 
 Type
   IDownload = interface
@@ -17,8 +18,7 @@ Type
     procedure Iniciar(const ALink: string);
     procedure Parar;
 
-    function Concluido: Boolean;
-    function Interrompido: Boolean;
+    function Status: TDownloadStatus;
 
     function TamanhoArquivoAsByte: Int64;
     function TamanhoArquivoAsKilobyte: Double;
@@ -53,8 +53,7 @@ Type
     procedure Iniciar(const ALink: string);
     procedure Parar;
 
-    function Concluido: Boolean;
-    function Interrompido: Boolean;
+    function Status: TDownloadStatus;
 
     function TamanhoArquivoAsByte: Int64;
     function TamanhoArquivoAsKilobyte: Double;
@@ -107,11 +106,6 @@ begin
   FreeAndNil(FObservers);
 
   inherited;
-end;
-
-function TDownload.Concluido: Boolean;
-begin
-  Result := FControleStatus.StatusAtual = dsConcluido;
 end;
 
 function TDownload.GetNomeArquivoTemp: string;
@@ -193,11 +187,6 @@ begin
   Task.Start;
 end;
 
-function TDownload.Interrompido: Boolean;
-begin
-  Result := FControleStatus.StatusAtual = dsInterrompido;
-end;
-
 procedure TDownload.Notificar;
 var
   Observer: IObserver;
@@ -220,6 +209,11 @@ begin
 
   if Self.TamanhoArquivoAsByte > 0 then
     Result := ( (Self.BaixadoAsByte / Self.TamanhoArquivoAsByte) * 100);
+end;
+
+function TDownload.Status: TDownloadStatus;
+begin
+  Result := FControleStatus.StatusAtual;
 end;
 
 procedure TDownload.AdicionarObserver(Observer: IObserver);

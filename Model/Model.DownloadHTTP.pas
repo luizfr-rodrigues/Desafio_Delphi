@@ -60,7 +60,8 @@ Type
 implementation
 
 uses
-  System.SysUtils;
+  System.SysUtils,
+  Model.DownloadConst;
 
 const
   HEADER_INFO_ARQUIVO = 'Content-Disposition';

@@ -107,6 +107,7 @@
         <DCCReference Include="Controller\Controller.Download.pas"/>
         <DCCReference Include="Model\Model.ObserverInterface.pas"/>
         <DCCReference Include="Model\Model.DownloadStatus.pas"/>
+        <DCCReference Include="Model\Model.DownloadConst.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

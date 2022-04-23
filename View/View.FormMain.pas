@@ -32,12 +32,14 @@ type
     procedure BtnIniciarClick(Sender: TObject);
     procedure BtnPercentualClick(Sender: TObject);
     procedure BtnPararClick(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     { Private declarations }
 
     FController: IDownloadController;
 
     procedure Atualizar;
+    function ConfirmarEncerrarDownload: Boolean;
 
   public
     { Public declarations }
@@ -50,6 +52,9 @@ implementation
 
 {$R *.dfm}
 
+uses
+  Model.DownloadConst;
+
 procedure TMainForm.Atualizar;
 begin
   ProgressBar1.Max := FController.Download.TamanhoArquivoAsByte;
@@ -58,10 +63,10 @@ begin
   Label1.Caption := FloatToStr(FController.Download.TamanhoArquivoAsByte);
   Label2.Caption := FloatToStr(FController.Download.BaixadoAsByte);
 
-  if FController.Download.Concluido then
+  if FController.Download.Status = dsConcluido then
     ShowMessage('Download concluído')
 
-  else if FController.Download.Interrompido then
+  else if FController.Download.Status = dsInterrompido then
     ShowMessage('Download interrompido');
 end;
 
@@ -93,6 +98,23 @@ procedure TMainForm.BtnPercentualClick(Sender: TObject);
 begin
   ShowMessage('Percentual atual do download: ' +
               FormatFloat('###,##0.00 %', FController.Download.PercentualBaixado));
+end;
+
+function TMainForm.ConfirmarEncerrarDownload: Boolean;
+begin
+  Result := MessageDlg('Existe um download em andamento, deseja interrompe-lo?',
+                       TMsgDlgType.mtConfirmation,
+                       [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo],
+                       0) = mrYes;
+
+  if Result then
+    FController.Parar;
+end;
+
+procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  if FController.Download.Status = dsIniciado then
+    CanClose := ConfirmarEncerrarDownload;
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
