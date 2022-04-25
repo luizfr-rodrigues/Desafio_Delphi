@@ -116,7 +116,10 @@
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
         <DCCReference Include="Model\Model.DownloadLog.pas"/>
-        <DCCReference Include="Win32\View.HistoricoDownloadForm.pas">
+        <DCCReference Include="Controller\Controller.HistoricoDownload.pas"/>
+        <DCCReference Include="Model\Model.FiredacConexao.pas"/>
+        <DCCReference Include="Model\Model.Conexao.pas"/>
+        <DCCReference Include="View\View.HistoricoDownloadForm.pas">
             <Form>FormHistoricoDownload</Form>
             <FormType>dfm</FormType>
         </DCCReference>

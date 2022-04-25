@@ -4,21 +4,18 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, FireDAC.Stan.Intf, FireDAC.Stan.Option,
-  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async,
-  FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, DAO.DMConexaoBD;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Controller.HistoricoDownload;
 
 type
   TFormHistoricoDownload = class(TForm)
     DBGrid1: TDBGrid;
     DataSource: TDataSource;
-    FDQuery: TFDQuery;
-    FDQueryURL: TStringField;
-    FDQueryDATAINICIO: TDateTimeField;
-    FDQueryDATAFIM: TDateTimeField;
     procedure FormShow(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
+    FController: IHistoricoDownloadController;
+
   public
     { Public declarations }
 
@@ -44,9 +41,15 @@ begin
   end;
 end;
 
+procedure TFormHistoricoDownload.FormCreate(Sender: TObject);
+begin
+  FController := THistoricoDownloadController.Create;
+  DataSource.DataSet := FController.Query.DataSet;
+end;
+
 procedure TFormHistoricoDownload.FormShow(Sender: TObject);
 begin
-  FDQuery.Open;
+  FController.Consultar;
 end;
 
 end.

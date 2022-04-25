@@ -2,6 +2,8 @@ unit Model.DownloadLog;
 
 interface
 
+uses Model.Conexao;
+
 Type
   IDownloadLog = interface
     ['{F02A5A04-B817-4E9C-A608-9A6A038F8794}']
@@ -23,6 +25,8 @@ Type
 
     procedure Salvar;
     procedure Atualizar;
+
+    procedure ConsultarTodos(const AQuery: IQuery);
   end;
 
   TDownloadLog = class(TInterfacedObject, IDownloadLog)
@@ -53,6 +57,8 @@ Type
 
     procedure Salvar;
     procedure Atualizar;
+
+    procedure ConsultarTodos(const AQuery: IQuery);
   end;
 
 implementation
@@ -86,6 +92,11 @@ begin
 
     ExecSQL;
   end;
+end;
+
+procedure TDownloadLog.ConsultarTodos(const AQuery: IQuery);
+begin
+  AQuery.Open('Select CODIGO, URL, DATAINICIO, DATAFIM From LOGDOWNLOAD');
 end;
 
 constructor TDownloadLog.Create;

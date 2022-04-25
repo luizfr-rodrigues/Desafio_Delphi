@@ -11,7 +11,10 @@ uses
   Model.DownloadConst in 'Model\Model.DownloadConst.pas',
   DAO.DMConexaoBD in 'DAO\DAO.DMConexaoBD.pas' {DMConexaoBD: TDataModule},
   Model.DownloadLog in 'Model\Model.DownloadLog.pas',
-  View.HistoricoDownloadForm in 'Win32\View.HistoricoDownloadForm.pas' {FormHistoricoDownload};
+  Controller.HistoricoDownload in 'Controller\Controller.HistoricoDownload.pas',
+  Model.FiredacConexao in 'Model\Model.FiredacConexao.pas',
+  Model.Conexao in 'Model\Model.Conexao.pas',
+  View.HistoricoDownloadForm in 'View\View.HistoricoDownloadForm.pas' {FormHistoricoDownload};
 
 {$R *.res}
 

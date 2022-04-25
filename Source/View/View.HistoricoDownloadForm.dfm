@@ -13,6 +13,7 @@ object FormHistoricoDownload: TFormHistoricoDownload
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -56,33 +57,7 @@ object FormHistoricoDownload: TFormHistoricoDownload
       end>
   end
   object DataSource: TDataSource
-    DataSet = FDQuery
-    Left = 368
-    Top = 128
-  end
-  object FDQuery: TFDQuery
-    Connection = DMConexaoBD.FDConnection
-    SQL.Strings = (
-      'Select CODIGO, URL, DATAINICIO, DATAFIM'
-      'From LOGDOWNLOAD')
-    Left = 296
-    Top = 128
-    object FDQueryURL: TStringField
-      FieldName = 'URL'
-      Origin = 'URL'
-      Required = True
-      Size = 600
-    end
-    object FDQueryDATAINICIO: TDateTimeField
-      Alignment = taCenter
-      FieldName = 'DATAINICIO'
-      Origin = 'DATAINICIO'
-      Required = True
-    end
-    object FDQueryDATAFIM: TDateTimeField
-      Alignment = taCenter
-      FieldName = 'DATAFIM'
-      Origin = 'DATAFIM'
-    end
+    Left = 48
+    Top = 104
   end
 end
