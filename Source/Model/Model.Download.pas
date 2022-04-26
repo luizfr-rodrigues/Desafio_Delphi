@@ -53,6 +53,8 @@ Type
     procedure SalvarFinalizacaoLog;
 
   public
+    class function New: IDownload;
+
     constructor Create;
     destructor Destroy; override;
 
@@ -101,12 +103,12 @@ constructor TDownload.Create;
 begin
   FObservers := TList<IObserver>.Create;
 
-  FControleStatus := TDownloadControleStatus.Create;
+  FControleStatus := TDownloadControleStatus.New;
 
-  FDownloadHTTP := TDownloadHTTP.Create(FControleStatus);
+  FDownloadHTTP := TDownloadHTTP.New(FControleStatus);
   FDownloadHTTP.SetProcNotificar(AtualizarProgresso);
 
-  FLog := TDownloadLog.Create;
+  FLog := TDownloadLog.New;
 end;
 
 destructor TDownload.Destroy;
@@ -197,6 +199,11 @@ begin
     end);
 
   Task.Start;
+end;
+
+class function TDownload.New: IDownload;
+begin
+  Result := TDownload.Create;
 end;
 
 procedure TDownload.Notificar;

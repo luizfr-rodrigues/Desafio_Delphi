@@ -47,6 +47,8 @@ Type
     procedure SetURL(const Value: string);
 
   public
+    class function New: IDownloadLog;
+
     constructor Create;
     destructor Destroy; override;
 
@@ -107,6 +109,11 @@ end;
 function TDownloadLog.GetURL: string;
 begin
     Result := FURL;
+end;
+
+class function TDownloadLog.New: IDownloadLog;
+begin
+  Result := TDownloadLog.Create;
 end;
 
 procedure TDownloadLog.Salvar;

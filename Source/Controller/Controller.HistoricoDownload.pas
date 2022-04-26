@@ -21,6 +21,8 @@ Type
     FQuery: IQuery;
 
   public
+    class function New: IHistoricoDownloadController;
+
     constructor Create;
     destructor Destroy; override;
 
@@ -42,7 +44,7 @@ end;
 
 constructor THistoricoDownloadController.Create;
 begin
-  FDownloadLog := TDownloadLog.Create;
+  FDownloadLog := TDownloadLog.New;
   FQuery := TQueryFactory.New.Query;
 end;
 
@@ -50,6 +52,11 @@ destructor THistoricoDownloadController.Destroy;
 begin
 
   inherited;
+end;
+
+class function THistoricoDownloadController.New: IHistoricoDownloadController;
+begin
+  Result := THistoricoDownloadController.Create;
 end;
 
 function THistoricoDownloadController.Query: IQuery;

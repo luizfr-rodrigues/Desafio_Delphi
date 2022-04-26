@@ -22,6 +22,8 @@ Type
     FDownload: IDownload;
 
   public
+    class function New(const ASenderForm: IObserver): IDownloadController;
+
     constructor Create(const ASenderForm: IObserver);
     destructor Destroy; override;
 
@@ -37,7 +39,7 @@ implementation
 
 constructor TDownloadController.Create(const ASenderForm: IObserver);
 begin
-  FDownload := TDownload.Create;
+  FDownload := TDownload.New;
   TDownload(FDownload).AdicionarObserver(ASenderForm);
 end;
 
@@ -55,6 +57,11 @@ end;
 procedure TDownloadController.Iniciar(const ALink: string);
 begin
   FDownload.Iniciar(ALink);
+end;
+
+class function TDownloadController.New(const ASenderForm: IObserver): IDownloadController;
+begin
+  Result := TDownloadController.Create(ASenderForm);
 end;
 
 procedure TDownloadController.Parar;

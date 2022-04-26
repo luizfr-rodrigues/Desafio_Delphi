@@ -19,6 +19,8 @@ Type
     FStatusAtual: TDownloadStatus;
 
   public
+    class function New: IDownloadControleStatus;
+
     constructor Create;
     destructor Destroy; override;
 
@@ -49,6 +51,11 @@ destructor TDownloadControleStatus.Destroy;
 begin
 
   inherited;
+end;
+
+class function TDownloadControleStatus.New: IDownloadControleStatus;
+begin
+  Result := TDownloadControleStatus.Create;
 end;
 
 end.

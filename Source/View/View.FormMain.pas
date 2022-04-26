@@ -122,7 +122,7 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  FController := TDownloadController.Create(Self);
+  FController := TDownloadController.New(Self);
 end;
 
 initialization

@@ -43,7 +43,7 @@ end;
 
 procedure TFormHistoricoDownload.FormCreate(Sender: TObject);
 begin
-  FController := THistoricoDownloadController.Create;
+  FController := THistoricoDownloadController.New;
   DataSource.DataSet := FController.Query.DataSet;
 end;
 

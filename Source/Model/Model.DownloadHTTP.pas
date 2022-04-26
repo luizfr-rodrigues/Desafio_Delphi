@@ -45,6 +45,8 @@ Type
     procedure ExtrairNomeArquivoResponse(const AHTTPResponse: IHTTPResponse);
 
   public
+    class function New(const AControleStatus: IDownloadControleStatus): IDownloadHTTP;
+
     constructor Create(const AControleStatus: IDownloadControleStatus);
     destructor Destroy; override;
 
@@ -111,6 +113,11 @@ begin
   FBaixadoEmBytes := 0;
 
   FNomeArquivo := '';
+end;
+
+class function TDownloadHTTP.New(const AControleStatus: IDownloadControleStatus): IDownloadHTTP;
+begin
+  Result := TDownloadHTTP.Create(AControleStatus);
 end;
 
 function TDownloadHTTP.NomeArquivo: string;

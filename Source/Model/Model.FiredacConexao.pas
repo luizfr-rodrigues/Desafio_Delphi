@@ -6,6 +6,7 @@ uses
   Model.Conexao,
 
   FireDAC.Comp.Client,
+  FireDAC.DApt,
   Data.DB;
 
 Type
