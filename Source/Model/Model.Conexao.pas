@@ -11,7 +11,9 @@ Type
     ['{4335CA34-9961-46CA-88D3-54B1A4DBB83C}']
 
     function DataSet: TDataSet;
+
     procedure Open(const AStrSQL: String);
+    procedure ExecSQL(const AStrSQL: String);
   end;
 
   IQueryFactory = interface

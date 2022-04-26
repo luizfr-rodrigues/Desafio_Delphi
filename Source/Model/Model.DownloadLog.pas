@@ -65,38 +65,17 @@ implementation
 
 { TDownloadLog }
 
-uses DAO.DMConexaoBD, Data.DB;
+uses
+  DAO.DownloadLog;
 
 procedure TDownloadLog.Atualizar;
 begin
-  with DMConexaoBD.FDQueryExec do
-  begin
-    SQL.Clear;
-    SQL.Add('Update LOGDOWNLOAD set');
-    SQL.Add('  URL = :URL, DATAINICIO = :DATAINICIO, DATAFIM = :DATAFIM');
-    SQL.Add('where CODIGO = :CODIGO');
-
-    ParamByName('CODIGO').DataType := ftInteger;
-    ParamByName('CODIGO').AsInteger := Self.Codigo;
-
-    ParamByName('URL').DataType := ftString;
-    ParamByName('URL').AsString := Self.URL;
-
-    ParamByName('DATAINICIO').DataType := ftDateTime;
-    if Self.DataInicio > 0 then
-      ParamByName('DATAINICIO').AsDateTime := Self.DataInicio;
-
-    ParamByName('DATAFIM').DataType := ftDateTime;
-    if Self.DataFim > 0 then
-      ParamByName('DATAFIM').AsDateTime := Self.DataFim;
-
-    ExecSQL;
-  end;
+  TDownloadLogDAO.New.Atualizar(Self);
 end;
 
 procedure TDownloadLog.ConsultarTodos(const AQuery: IQuery);
 begin
-  AQuery.Open('Select CODIGO, URL, DATAINICIO, DATAFIM From LOGDOWNLOAD');
+  TDownloadLogDAO.New.Consultar(AQuery);
 end;
 
 constructor TDownloadLog.Create;
@@ -132,36 +111,7 @@ end;
 
 procedure TDownloadLog.Salvar;
 begin
-  with DMConexaoBD.FDQueryExec do
-  begin
-    SQL.Clear;
-    SQL.Add('Insert Into LOGDOWNLOAD');
-    SQL.Add('  (URL, DATAINICIO, DATAFIM)');
-    SQL.Add('Values');
-    SQL.Add('  (:URL, :DATAINICIO, :DATAFIM)');
-
-    ParamByName('URL').DataType := ftString;
-    ParamByName('URL').AsString := Self.URL;
-
-    ParamByName('DATAINICIO').DataType := ftDateTime;
-    if Self.DataInicio > 0 then
-      ParamByName('DATAINICIO').AsDateTime := Self.DataInicio;
-
-    ParamByName('DATAFIM').DataType := ftDateTime;
-    if Self.DataFim > 0 then
-      ParamByName('DATAFIM').AsDateTime := Self.DataFim;
-
-    ExecSQL;
-
-    SQL.Clear;
-    SQL.Add('Select last_insert_rowid() as LastID');
-    Open;
-
-    if not IsEmpty then
-      Self.Codigo := FieldByName('LastID').AsInteger;
-
-    Close;
-  end;
+  TDownloadLogDAO.New.Salvar(Self);
 end;
 
 procedure TDownloadLog.SetCodigo(const Value: integer);

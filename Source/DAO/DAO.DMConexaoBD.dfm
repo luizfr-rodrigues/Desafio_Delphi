@@ -14,11 +14,4 @@ object DMConexaoBD: TDMConexaoBD
     Left = 72
     Top = 128
   end
-  object FDQueryExec: TFDQuery
-    Connection = FDConnection
-    SQL.Strings = (
-      'Select * From LOGDOWNLOAD')
-    Left = 232
-    Top = 64
-  end
 end

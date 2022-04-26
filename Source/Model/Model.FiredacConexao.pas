@@ -21,7 +21,9 @@ Type
     destructor Destroy; override;
 
     function DataSet: TDataSet;
+
     procedure Open(const AStrSQL: String);
+    procedure ExecSQL(const AStrSQL: String);
   end;
 
 implementation
@@ -42,6 +44,11 @@ begin
   FreeAndNil(FQuery);
 
   inherited;
+end;
+
+procedure TFiredacQuery.ExecSQL(const AStrSQL: String);
+begin
+  FQuery.ExecSQL(AStrSQL);
 end;
 
 class function TFiredacQuery.New(const AConexao: TFDConnection): IQuery;
