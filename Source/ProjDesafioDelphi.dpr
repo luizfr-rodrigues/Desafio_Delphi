@@ -9,7 +9,6 @@ uses
   Model.ObserverInterface in 'Model\Model.ObserverInterface.pas',
   Model.DownloadStatus in 'Model\Model.DownloadStatus.pas',
   Model.DownloadConst in 'Model\Model.DownloadConst.pas',
-  DAO.DMConexaoBD in 'DAO\DAO.DMConexaoBD.pas' {DMConexaoBD: TDataModule},
   Model.DownloadLog in 'Model\Model.DownloadLog.pas',
   Controller.HistoricoDownload in 'Controller\Controller.HistoricoDownload.pas',
   Model.FiredacConexao in 'Model\Model.FiredacConexao.pas',
@@ -22,7 +21,6 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TDMConexaoBD, DMConexaoBD);
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;
 end.

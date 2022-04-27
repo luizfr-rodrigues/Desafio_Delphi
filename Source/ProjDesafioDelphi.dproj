@@ -111,10 +111,6 @@
         <DCCReference Include="Model\Model.ObserverInterface.pas"/>
         <DCCReference Include="Model\Model.DownloadStatus.pas"/>
         <DCCReference Include="Model\Model.DownloadConst.pas"/>
-        <DCCReference Include="DAO\DAO.DMConexaoBD.pas">
-            <Form>DMConexaoBD</Form>
-            <DesignClass>TDataModule</DesignClass>
-        </DCCReference>
         <DCCReference Include="Model\Model.DownloadLog.pas"/>
         <DCCReference Include="Controller\Controller.HistoricoDownload.pas"/>
         <DCCReference Include="Model\Model.FiredacConexao.pas"/>
