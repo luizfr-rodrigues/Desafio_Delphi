@@ -2,7 +2,8 @@ unit Model.DownloadLog;
 
 interface
 
-uses Model.Conexao;
+uses
+  Model.Conexao;
 
 Type
   IDownloadLog = interface
@@ -26,7 +27,7 @@ Type
     procedure Salvar;
     procedure Atualizar;
 
-    procedure ConsultarTodos(const AQuery: IQuery);
+    procedure Consultar(const AQuery: IQuery);
   end;
 
   TDownloadLog = class(TInterfacedObject, IDownloadLog)
@@ -60,7 +61,7 @@ Type
     procedure Salvar;
     procedure Atualizar;
 
-    procedure ConsultarTodos(const AQuery: IQuery);
+    procedure Consultar(const AQuery: IQuery);
   end;
 
 implementation
@@ -75,7 +76,7 @@ begin
   TDownloadLogDAO.New.Atualizar(Self);
 end;
 
-procedure TDownloadLog.ConsultarTodos(const AQuery: IQuery);
+procedure TDownloadLog.Consultar(const AQuery: IQuery);
 begin
   TDownloadLogDAO.New.Consultar(AQuery);
 end;

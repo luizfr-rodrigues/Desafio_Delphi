@@ -39,7 +39,7 @@ uses
 
 procedure THistoricoDownloadController.Consultar;
 begin
-  FDownloadLog.ConsultarTodos(FQuery);
+  FDownloadLog.Consultar(FQuery);
 end;
 
 constructor THistoricoDownloadController.Create;

@@ -10,13 +10,18 @@ Type
   IDownloadControleStatus = interface
     ['{F5801CFA-F51E-4F29-BD84-62E0E8F5D214}']
 
-    procedure AlterarStatus(const ANovoStatus: TDownloadStatus);
-    function StatusAtual: TDownloadStatus;
+    function GetStatus: TDownloadStatus;
+    procedure SetStatus(const AValue: TDownloadStatus);
+
+    property Status: TDownloadStatus read GetStatus write SetStatus;
   end;
 
   TDownloadControleStatus = class(TInterfacedObject, IDownloadControleStatus)
   private
-    FStatusAtual: TDownloadStatus;
+    FStatus: TDownloadStatus;
+
+    function GetStatus: TDownloadStatus;
+    procedure SetStatus(const Value: TDownloadStatus);
 
   public
     class function New: IDownloadControleStatus;
@@ -24,33 +29,32 @@ Type
     constructor Create;
     destructor Destroy; override;
 
-    procedure AlterarStatus(const ANovoStatus: TDownloadStatus);
-    function StatusAtual: TDownloadStatus;
+    property Status: TDownloadStatus read GetStatus write SetStatus;
   end;
 
 implementation
 
 { TDownloadControleStatus }
 
-function TDownloadControleStatus.StatusAtual: TDownloadStatus;
+procedure TDownloadControleStatus.SetStatus(const Value: TDownloadStatus);
 begin
-  Result := FStatusAtual;
-end;
-
-procedure TDownloadControleStatus.AlterarStatus(const ANovoStatus: TDownloadStatus);
-begin
-  FStatusAtual := ANovoStatus;
+  FStatus := Value;
 end;
 
 constructor TDownloadControleStatus.Create;
 begin
-  FStatusAtual := dsAguardando;
+  FStatus := dsAguardando;
 end;
 
 destructor TDownloadControleStatus.Destroy;
 begin
 
   inherited;
+end;
+
+function TDownloadControleStatus.GetStatus: TDownloadStatus;
+begin
+  Result := FStatus;
 end;
 
 class function TDownloadControleStatus.New: IDownloadControleStatus;

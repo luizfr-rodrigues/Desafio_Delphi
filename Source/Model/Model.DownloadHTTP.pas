@@ -98,7 +98,7 @@ end;
 procedure TDownloadHTTP.HTTPClientOnReceiveData(const Sender: TObject; AContentLength, AReadCount: Int64;
                                                 var AAbort: Boolean);
 begin
-  AAbort := FControleStatus.StatusAtual = dsInterrompido;
+  AAbort := FControleStatus.Status = dsInterrompido;
 
   FTamanhoArquivoEmBytes := AContentLength;
   FBaixadoEmBytes := AReadCount;
