@@ -3,7 +3,7 @@ unit Model.DownloadStatus;
 interface
 
 uses
-  Model.DownloadConst;
+  Model.AppConst;
 
 Type
 

@@ -59,11 +59,11 @@ Type
 implementation
 
 uses
-  System.SysUtils;
+  System.SysUtils,
+  Model.AppConst;
 
 const
   SQLITE_DRIVER_ID = 'SQLite';
-  SQLITE_DB_PATH   = '..\Database\Desafio.db3';
 
 { TFiredacQuery }
 
@@ -107,7 +107,7 @@ begin
   with FConnection do
   begin
     Params.Values['DriverID'] := SQLITE_DRIVER_ID;
-    Params.Values['Database'] := SQLITE_DB_PATH;
+    Params.Values['Database'] := DATABASE_DIR + DATABASE_NAME;
 
     LoginPrompt := False;
   end;

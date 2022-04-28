@@ -53,9 +53,6 @@ object MainForm: TMainForm
     Width = 708
     Height = 21
     TabOrder = 2
-    Text = 
-      'https://az764295.vo.msecnd.net/stable/78a4c91400152c0f27ba4d363e' +
-      'b56d2835f9903a/VSCodeUserSetup-x64-1.43.0.exe'
   end
   object ProgressBar1: TProgressBar
     Left = 0

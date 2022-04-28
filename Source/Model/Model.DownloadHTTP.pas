@@ -63,7 +63,7 @@ implementation
 
 uses
   System.SysUtils,
-  Model.DownloadConst,
+  Model.AppConst,
   Model.Lib;
 
 const

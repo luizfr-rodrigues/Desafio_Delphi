@@ -53,7 +53,7 @@ implementation
 {$R *.dfm}
 
 uses
-  Model.DownloadConst,
+  Model.AppConst,
   View.HistoricoDownloadForm;
 
 procedure TMainForm.Atualizar;
@@ -120,8 +120,5 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   FController := TDownloadController.New(Self);
 end;
-
-initialization
-  ReportMemoryLeaksOnShutdown := DebugHook <> 0;
 
 end.

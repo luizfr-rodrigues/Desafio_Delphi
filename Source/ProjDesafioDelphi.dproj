@@ -83,7 +83,7 @@
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
-        <DCC_ExeOutput>..\bin</DCC_ExeOutput>
+        <DCC_ExeOutput>..\Bin</DCC_ExeOutput>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
@@ -110,7 +110,7 @@
         <DCCReference Include="Controller\Controller.Download.pas"/>
         <DCCReference Include="Model\Model.ObserverInterface.pas"/>
         <DCCReference Include="Model\Model.DownloadStatus.pas"/>
-        <DCCReference Include="Model\Model.DownloadConst.pas"/>
+        <DCCReference Include="Model\Model.AppConst.pas"/>
         <DCCReference Include="Model\Model.DownloadLog.pas"/>
         <DCCReference Include="Controller\Controller.HistoricoDownload.pas"/>
         <DCCReference Include="Model\Model.FiredacConexao.pas"/>
@@ -121,6 +121,9 @@
         </DCCReference>
         <DCCReference Include="DAO\DAO.DownloadLog.pas"/>
         <DCCReference Include="Model\Model.Lib.pas"/>
+        <DCCReference Include="Model\Model.InicializacaoApp.pas"/>
+        <DCCReference Include="DAO\DAO.ScriptBD.pas"/>
+        <DCCReference Include="Model\Model.ScriptBD.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -147,7 +150,7 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
-                <DeployFile LocalName="..\bin\ProjDesafioDelphi.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="..\Bin\ProjDesafioDelphi.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>ProjDesafioDelphi.exe</RemoteName>
                         <Overwrite>true</Overwrite>

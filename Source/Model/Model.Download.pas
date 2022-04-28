@@ -8,7 +8,7 @@ uses
   Model.DownloadHTTP,
   Model.ObserverInterface,
   Model.DownloadStatus,
-  Model.DownloadConst,
+  Model.AppConst,
   Model.DownloadLog;
 
 Type
