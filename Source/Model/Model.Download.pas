@@ -3,7 +3,6 @@ unit Model.Download;
 interface
 
 uses
-  System.Classes,
   Generics.Collections,
 
   Model.DownloadHTTP,
@@ -13,6 +12,7 @@ uses
   Model.DownloadLog;
 
 Type
+
   IDownload = interface
     ['{231F7092-41B6-4851-8229-49B9D5BF15F8}']
 
@@ -20,6 +20,7 @@ Type
     procedure Parar;
 
     function Status: TDownloadStatus;
+    function ErroMsg: string;
 
     function TamanhoArquivoAsByte: Int64;
     function TamanhoArquivoAsKilobyte: Double;
@@ -34,14 +35,21 @@ Type
 
   TDownload = class(TInterfacedObject, IDownload, ISubject)
   private
-    FObservers: TList<IObserver>;
+    FObservers: TList<Model.ObserverInterface.IObserver>;
 
     FControleStatus: IDownloadControleStatus;
     FDownloadHTTP: IDownloadHTTP;
 
-    FLog: IDownloadLog;
+    FErroMsg: string;
+    FNomeArquivoTemp: string;
+    FURL: string;
 
-    function GetNomeArquivoTemp: string;
+    FDtHrInicio: TDateTime;
+
+    procedure ExecutarReqThread;
+    procedure ExecutarReq;
+
+    procedure GerarNomeArquivoTemp;
     function GetPathArquivoTemp: string;
 
     function GetPathArquivoNovo(const ACountArquivo: Integer = 0): string;
@@ -49,8 +57,7 @@ Type
     procedure AtualizarProgresso(const Sender: TObject);
     procedure Notificar;
 
-    procedure SalvarLog(const AURL: string);
-    procedure SalvarFinalizacaoLog;
+    procedure SalvarHistorico;
 
   public
     class function New: IDownload;
@@ -62,6 +69,7 @@ Type
     procedure Parar;
 
     function Status: TDownloadStatus;
+    function ErroMsg: string;
 
     function TamanhoArquivoAsByte: Int64;
     function TamanhoArquivoAsKilobyte: Double;
@@ -73,14 +81,23 @@ Type
 
     function PercentualBaixado: Double;
 
-    procedure AdicionarObserver(Observer: IObserver);
+    procedure AdicionarObserver(Observer: Model.ObserverInterface.IObserver);
   end;
 
 implementation
 
 uses
+  System.Classes,
+  System.SysUtils,
   System.Threading,
-  System.SysUtils;
+
+  Model.Lib;
+
+const
+  FATOR_CONVERSAO_BYTE = 1000;
+
+  PREFIXO_ARQUIVO_TEMP = 'temp_file';
+  EXTENSAO_ARQUIVO_TEMP = '.download';
 
 { TDownload }
 
@@ -91,24 +108,24 @@ end;
 
 function TDownload.BaixadoAsKilobyte: Double;
 begin
-  Result := Self.BaixadoAsByte / 1024;
+  Result := Self.BaixadoAsByte / FATOR_CONVERSAO_BYTE;
 end;
 
 function TDownload.BaixadoAsMegabyte: Double;
 begin
-  Result := Self.BaixadoAsKilobyte / 1024;
+  Result := Self.BaixadoAsKilobyte / FATOR_CONVERSAO_BYTE;
 end;
 
 constructor TDownload.Create;
 begin
-  FObservers := TList<IObserver>.Create;
+  FObservers := TList<Model.ObserverInterface.IObserver>.Create;
 
   FControleStatus := TDownloadControleStatus.New;
 
   FDownloadHTTP := TDownloadHTTP.New(FControleStatus);
-  FDownloadHTTP.SetProcNotificar(AtualizarProgresso);
+  FDownloadHTTP.SetProcNotificarProgresso(AtualizarProgresso);
 
-  FLog := TDownloadLog.New;
+  FErroMsg := '';
 end;
 
 destructor TDownload.Destroy;
@@ -118,17 +135,78 @@ begin
   inherited;
 end;
 
-function TDownload.GetNomeArquivoTemp: string;
+function TDownload.ErroMsg: string;
 begin
-  Result := 'temp_file.download';
+  Result := FErroMsg;
+end;
+
+procedure TDownload.ExecutarReq;
+var
+  Arquivo: TFileStream;
+begin
+  Try
+
+    Try
+      Arquivo := TFileStream.Create(GetPathArquivoTemp, fmCreate);
+      FDownloadHTTP.Executar(FURL, Arquivo);
+
+    Finally
+      FreeAndNil(Arquivo);
+    End;
+
+    if FControleStatus.Status = dsInterrompido then
+      DeleteFile(GetPathArquivoTemp)
+
+    else
+    begin
+      RenameFile(GetPathArquivoTemp, GetPathArquivoNovo);
+      SalvarHistorico;
+
+      FControleStatus.Status := dsConcluido;
+      Self.Notificar;
+    end;
+
+  Except
+    on E: Exception do
+    begin
+      DeleteFile(GetPathArquivoTemp);
+
+      FControleStatus.Status := dsErro;
+      FErroMsg := E.Message;
+
+      Self.Notificar;
+    end;
+  End;
+end;
+
+procedure TDownload.ExecutarReqThread;
+var
+  Task: ITask;
+begin
+  Task := TTask.Create(
+    procedure
+    begin
+      ExecutarReq;
+    end);
+
+  Task.Start;
+end;
+
+procedure TDownload.GerarNomeArquivoTemp;
+begin
+  FNomeArquivoTemp := PREFIXO_ARQUIVO_TEMP +
+                      FormatDateTime('_hhmmsszzz', Now) +
+                      EXTENSAO_ARQUIVO_TEMP;
 end;
 
 function TDownload.GetPathArquivoNovo(const ACountArquivo: Integer): string;
 var
   Diretorio, Path, ExtensaoArquivo, NomeArquivoSemExtensao: string;
 begin
-  Diretorio := IncludeTrailingPathDelimiter(GetEnvironmentVariable('USERPROFILE')) +
-               'Downloads\';
+  Diretorio := TLib.PathPadraoDownloadWin;
+
+  if not DirectoryExists(Diretorio) then
+    Diretorio := TLib.PathExe;
 
   if ACountArquivo > 0 then
   begin
@@ -149,56 +227,32 @@ begin
 end;
 
 function TDownload.GetPathArquivoTemp: string;
+var
+  Diretorio: string;
 begin
-  Result := IncludeTrailingPathDelimiter(GetEnvironmentVariable('USERPROFILE')) +
-            'Downloads\' +
-            GetNomeArquivoTemp;
+  Diretorio := TLib.PathPadraoDownloadWin;
+
+  if not DirectoryExists(Diretorio) then
+    Diretorio := TLib.PathExe;
+
+  Result := Diretorio + FNomeArquivoTemp;
 end;
 
 procedure TDownload.Iniciar(const ALink: string);
-var
-  Task: ITask;
 begin
   if ALink.IsEmpty then
     raise Exception.Create('Link para download não foi informado');
 
-  if FControleStatus.StatusAtual = dsIniciado then
+  if FControleStatus.Status = dsIniciado then
     raise Exception.Create('Já existe um download em andamento');
 
-  Task := TTask.Create(
-    procedure
-    var
-      Arquivo: TFileStream;
-    begin
+  GerarNomeArquivoTemp;
+  FURL := ALink;
+  FDtHrInicio := Now;
 
-      Try
-        Arquivo := TFileStream.Create(GetPathArquivoTemp, fmCreate);
+  FControleStatus.Status := dsIniciado;
 
-        FControleStatus.AlterarStatus(dsIniciado);
-        SalvarLog(ALink);
-
-        FDownloadHTTP.Executar(ALink, Arquivo);
-
-      Finally
-        FreeAndNil(Arquivo);
-      End;
-
-      if FControleStatus.StatusAtual = dsIniciado then
-      begin
-        RenameFile(GetPathArquivoTemp, GetPathArquivoNovo);
-
-        FControleStatus.AlterarStatus(dsConcluido);
-        SalvarFinalizacaoLog;
-
-        Self.Notificar;
-      end
-
-      else if FControleStatus.StatusAtual = dsInterrompido then
-        DeleteFile(GetPathArquivoTemp);
-
-    end);
-
-  Task.Start;
+  ExecutarReqThread;
 end;
 
 class function TDownload.New: IDownload;
@@ -208,7 +262,7 @@ end;
 
 procedure TDownload.Notificar;
 var
-  Observer: IObserver;
+  Observer: Model.ObserverInterface.IObserver;
 begin
   for Observer in FObservers do
     Observer.Atualizar;
@@ -216,10 +270,10 @@ end;
 
 procedure TDownload.Parar;
 begin
-  if FControleStatus.StatusAtual <> dsIniciado then
-    raise Exception.Create('Não existe nenhum download em andamento');
+  if FControleStatus.Status <> dsIniciado then
+    raise Exception.Create('Nenhum download em andamento');
 
-  FControleStatus.AlterarStatus(dsInterrompido);
+  FControleStatus.Status := dsInterrompido;
 end;
 
 function TDownload.PercentualBaixado: Double;
@@ -230,28 +284,25 @@ begin
     Result := ( (Self.BaixadoAsByte / Self.TamanhoArquivoAsByte) * 100);
 end;
 
-procedure TDownload.SalvarFinalizacaoLog;
+procedure TDownload.SalvarHistorico;
+var
+  Log: IDownloadLog;
 begin
-  FLog.DataFim := Now;
-  FLog.Atualizar;
-end;
+  Log := TDownloadLog.New;
 
-procedure TDownload.SalvarLog(const AURL: string);
-begin
-  FLog.Codigo := 0;
-  FLog.URL := AURL;
-  FLog.DataInicio := Now;
-  FLog.DataFim := 0;
+  Log.URL := FURL;
+  Log.DataInicio := FDtHrInicio;
+  Log.DataFim := Now;
 
-  FLog.Salvar;
+  Log.Salvar;
 end;
 
 function TDownload.Status: TDownloadStatus;
 begin
-  Result := FControleStatus.StatusAtual;
+  Result := FControleStatus.Status;
 end;
 
-procedure TDownload.AdicionarObserver(Observer: IObserver);
+procedure TDownload.AdicionarObserver(Observer: Model.ObserverInterface.IObserver);
 begin
   FObservers.Add(Observer);
 end;
@@ -268,12 +319,12 @@ end;
 
 function TDownload.TamanhoArquivoAsKilobyte: Double;
 begin
-  Result := Self.TamanhoArquivoAsByte / 1024;
+  Result := Self.TamanhoArquivoAsByte / FATOR_CONVERSAO_BYTE;
 end;
 
 function TDownload.TamanhoArquivoAsMegabyte: Double;
 begin
-  Result := Self.TamanhoArquivoAsKilobyte / 1024;
+  Result := Self.TamanhoArquivoAsKilobyte / FATOR_CONVERSAO_BYTE;
 end;
 
 end.

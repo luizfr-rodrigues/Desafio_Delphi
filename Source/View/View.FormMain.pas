@@ -62,10 +62,14 @@ begin
   ProgressBar1.Position := FController.Download.BaixadoAsByte;
 
   if FController.Download.Status = dsConcluido then
-    ShowMessage('Download concluído')
+    MessageDlg('Download concluído', TMsgDlgType.mtInformation, [TMsgDlgBtn.mbOK], 0)
 
   else if FController.Download.Status = dsInterrompido then
-    ShowMessage('Download interrompido');
+    MessageDlg('Download interrompido', TMsgDlgType.mtWarning, [TMsgDlgBtn.mbOK], 0)
+
+  else if FController.Download.Status = dsErro then
+    MessageDlg('Falha no download' + #13 + FController.Download.ErroMsg,
+               TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0);
 end;
 
 procedure TMainForm.BtnHistoricoClick(Sender: TObject);
@@ -75,15 +79,7 @@ end;
 
 procedure TMainForm.BtnIniciarClick(Sender: TObject);
 begin
-  ProgressBar1.Position := 0;
-
-  Try
-    FController.Iniciar(EdtLink.Text);
-
-  Except
-    on E: Exception do
-      ShowMessage(E.Message);
-  End;
+  FController.Iniciar(EdtLink.Text);
 end;
 
 procedure TMainForm.BtnPararClick(Sender: TObject);
@@ -93,21 +89,21 @@ begin
 
   Except
     on E: Exception do
-      ShowMessage(E.Message);
+      MessageDlg(E.Message, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0);
   End;
 end;
 
 procedure TMainForm.BtnPercentualClick(Sender: TObject);
 begin
-  ShowMessage('Percentual atual do download: ' +
-              FormatFloat('###,##0.00 %', FController.Download.PercentualBaixado));
+  MessageDlg('Percentual do download: ' +
+             FormatFloat('###,##0.00 %', FController.Download.PercentualBaixado),
+             TMsgDlgType.mtInformation, [TMsgDlgBtn.mbOK], 0)
 end;
 
 function TMainForm.ConfirmarEncerrarDownload: Boolean;
 begin
   Result := MessageDlg('Existe um download em andamento, deseja interrompe-lo?',
-                       TMsgDlgType.mtConfirmation,
-                       [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo],
+                       TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo],
                        0) = mrYes;
 
   if Result then

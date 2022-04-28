@@ -64,8 +64,6 @@ object MainForm: TMainForm
     Height = 25
     Align = alBottom
     TabOrder = 3
-    ExplicitTop = 220
-    ExplicitWidth = 704
   end
   object BtnPercentual: TButton
     Left = 566

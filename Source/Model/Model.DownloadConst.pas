@@ -4,7 +4,7 @@ interface
 
 Type
 
-  TDownloadStatus = (dsAguardando, dsIniciado, dsInterrompido, dsConcluido);
+  TDownloadStatus = (dsAguardando, dsIniciado, dsInterrompido, dsConcluido, dsErro);
 
 implementation
 

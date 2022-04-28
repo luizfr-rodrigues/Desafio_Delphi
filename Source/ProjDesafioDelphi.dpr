@@ -14,7 +14,8 @@ uses
   Model.FiredacConexao in 'Model\Model.FiredacConexao.pas',
   Model.Conexao in 'Model\Model.Conexao.pas',
   View.HistoricoDownloadForm in 'View\View.HistoricoDownloadForm.pas' {FormHistoricoDownload},
-  DAO.DownloadLog in 'DAO\DAO.DownloadLog.pas';
+  DAO.DownloadLog in 'DAO\DAO.DownloadLog.pas',
+  Model.Lib in 'Model\Model.Lib.pas';
 
 {$R *.res}
 

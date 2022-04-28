@@ -17,7 +17,7 @@ Type
     ['{4C10A6A1-B5FC-45E8-AD41-A155A39588FC}']
 
     procedure Executar(const ALink: string; const AStream: TStream);
-    procedure SetProcNotificar(const AProcNotificar: TNotificarProgresso);
+    procedure SetProcNotificarProgresso(const AProcNotificar: TNotificarProgresso);
 
     function TamanhoArquivoAsBytes: Int64;
     function BaixadoAsBytes: Int64;
@@ -30,14 +30,14 @@ Type
     FHTTPClient: TNetHTTPClient;
 
     FControleStatus: IDownloadControleStatus;
-    FProcNotificar: TNotificarProgresso;
+    FProcNotificarProgresso: TNotificarProgresso;
 
     FTamanhoArquivoEmBytes: Int64;
     FBaixadoEmBytes: Int64;
 
     FNomeArquivo: string;
 
-    procedure IniciarRequisicao;
+    procedure Inicializar;
 
     procedure HTTPClientOnReceiveData(const Sender: TObject; AContentLength, AReadCount: Int64;
                                       var AAbort: Boolean);
@@ -51,7 +51,7 @@ Type
     destructor Destroy; override;
 
     procedure Executar(const ALink: string; const AStream: TStream);
-    procedure SetProcNotificar(const AProcNotificar: TNotificarProgresso);
+    procedure SetProcNotificarProgresso(const AProcNotificar: TNotificarProgresso);
 
     function TamanhoArquivoAsBytes: Int64;
     function BaixadoAsBytes: Int64;
@@ -63,13 +63,14 @@ implementation
 
 uses
   System.SysUtils,
-  Model.DownloadConst;
+  Model.DownloadConst,
+  Model.Lib;
 
 const
+  HTTP_CODE_SUCCESS = 200;
+
   HEADER_INFO_ARQUIVO = 'Content-Disposition';
   HEADER_TAG_NOME_ARQUIVO = 'filename=';
-
-  CARACTER_INVALIDO_NOME_ARQUIVO: array[1..9] of char = ('\', '/', ':', '*', '?', '"', '<', '>', '|');
 
 { TDownloadHTTP }
 
@@ -85,7 +86,7 @@ begin
 
   FControleStatus := AControleStatus;
 
-  FProcNotificar := nil;
+  FProcNotificarProgresso := nil;
 end;
 
 destructor TDownloadHTTP.Destroy;
@@ -103,11 +104,11 @@ begin
   FTamanhoArquivoEmBytes := AContentLength;
   FBaixadoEmBytes := AReadCount;
 
-  if Assigned(FProcNotificar) then
-    FProcNotificar(Sender);
+  if Assigned(FProcNotificarProgresso) then
+    FProcNotificarProgresso(Sender);
 end;
 
-procedure TDownloadHTTP.IniciarRequisicao;
+procedure TDownloadHTTP.Inicializar;
 begin
   FTamanhoArquivoEmBytes := 0;
   FBaixadoEmBytes := 0;
@@ -125,25 +126,29 @@ begin
   Result := FNomeArquivo;
 end;
 
-procedure TDownloadHTTP.SetProcNotificar(const AProcNotificar: TNotificarProgresso);
+procedure TDownloadHTTP.SetProcNotificarProgresso(const AProcNotificar: TNotificarProgresso);
 begin
-  FProcNotificar := AProcNotificar;
+  FProcNotificarProgresso := AProcNotificar;
 end;
 
 procedure TDownloadHTTP.Executar(const ALink: string; const AStream: TStream);
 var
   Response: IHTTPResponse;
 begin
-  IniciarRequisicao;
+  Inicializar;
 
   Response := FHTTPClient.Get(ALink, AStream);
-  ExtrairNomeArquivoResponse(Response);
+
+  if Response.StatusCode = HTTP_CODE_SUCCESS then
+    ExtrairNomeArquivoResponse(Response)
+  else
+    raise Exception.Create('Erro na requisição' + #13 + 'Verifique se o link informado está correto');
 end;
 
 procedure TDownloadHTTP.ExtrairNomeArquivoResponse(const AHTTPResponse: IHTTPResponse);
 var
   Conteudo: string;
-  PosInicialNomeArquivo, i: Integer;
+  PosInicialNomeArquivo: Integer;
 begin
   with AHTTPResponse do
   begin
@@ -154,10 +159,7 @@ begin
       PosInicialNomeArquivo := Pos(HEADER_TAG_NOME_ARQUIVO, Conteudo) +
                                ( Length(HEADER_TAG_NOME_ARQUIVO) - 1 );
 
-      FNomeArquivo := Conteudo.Substring(PosInicialNomeArquivo);
-
-      for I := 1 to High(CARACTER_INVALIDO_NOME_ARQUIVO) do
-        FNomeArquivo := FNomeArquivo.Replace(CARACTER_INVALIDO_NOME_ARQUIVO[i], '');
+      FNomeArquivo := TLib.NomeArquivoValido(Conteudo.Substring(PosInicialNomeArquivo));
     end;
   end;
 end;
