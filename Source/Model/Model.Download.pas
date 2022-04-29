@@ -40,6 +40,8 @@ Type
     FControleStatus: IDownloadControleStatus;
     FDownloadHTTP: IDownloadHTTP;
 
+    FDownloadLog: IDownloadLog;
+
     FErroMsg: string;
     FNomeArquivoTemp: string;
     FURL: string;
@@ -57,7 +59,8 @@ Type
     procedure AtualizarProgresso(const Sender: TObject);
     procedure Notificar;
 
-    procedure SalvarHistorico;
+    procedure SalvarHistIniciar;
+    procedure SalvarHistFinalizar;
 
   public
     class function New: IDownload;
@@ -123,6 +126,8 @@ begin
   FDownloadHTTP := TDownloadHTTP.New(FControleStatus);
   FDownloadHTTP.SetProcNotificarProgresso(AtualizarProgresso);
 
+  FDownloadLog := TDownloadLog.New;
+
   FErroMsg := '';
 end;
 
@@ -142,6 +147,8 @@ procedure TDownload.ExecutarReq;
 var
   Arquivo: TFileStream;
 begin
+  SalvarHistIniciar;
+
   Try
 
     Try
@@ -158,7 +165,7 @@ begin
     else
     begin
       RenameFile(GetPathArquivoTemp, GetPathArquivoNovo);
-      SalvarHistorico;
+      SalvarHistFinalizar;
 
       FControleStatus.Status := dsConcluido;
       Self.Notificar;
@@ -282,17 +289,20 @@ begin
     Result := ( (Self.BaixadoAsByte / Self.TamanhoArquivoAsByte) * 100);
 end;
 
-procedure TDownload.SalvarHistorico;
-var
-  Log: IDownloadLog;
+procedure TDownload.SalvarHistFinalizar;
 begin
-  Log := TDownloadLog.New;
+  FDownloadLog.DataFim := Now;
+  FDownloadLog.Atualizar;
+end;
 
-  Log.URL := FURL;
-  Log.DataInicio := FDtHrInicio;
-  Log.DataFim := Now;
+procedure TDownload.SalvarHistIniciar;
+begin
+  FDownloadLog.Codigo := 0;
+  FDownloadLog.URL := FURL;
+  FDownloadLog.DataInicio := FDtHrInicio;
+  FDownloadLog.DataFim := 0;
 
-  Log.Salvar;
+  FDownloadLog.Salvar;
 end;
 
 function TDownload.Status: TDownloadStatus;
