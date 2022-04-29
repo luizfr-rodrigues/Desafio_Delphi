@@ -94,8 +94,6 @@ uses
   Model.Lib;
 
 const
-  FATOR_CONVERSAO_BYTE = 1000;
-
   PREFIXO_ARQUIVO_TEMP = 'temp_file';
   EXTENSAO_ARQUIVO_TEMP = '.download';
 
@@ -108,12 +106,12 @@ end;
 
 function TDownload.BaixadoAsKilobyte: Double;
 begin
-  Result := Self.BaixadoAsByte / FATOR_CONVERSAO_BYTE;
+  Result := TLib.ByteToKilobyte(Self.BaixadoAsByte)
 end;
 
 function TDownload.BaixadoAsMegabyte: Double;
 begin
-  Result := Self.BaixadoAsKilobyte / FATOR_CONVERSAO_BYTE;
+  Result := TLib.KilobyteToMegabyte(Self.BaixadoAsKilobyte);
 end;
 
 constructor TDownload.Create;
@@ -319,12 +317,12 @@ end;
 
 function TDownload.TamanhoArquivoAsKilobyte: Double;
 begin
-  Result := Self.TamanhoArquivoAsByte / FATOR_CONVERSAO_BYTE;
+  Result := TLib.ByteToKilobyte(Self.TamanhoArquivoAsByte);
 end;
 
 function TDownload.TamanhoArquivoAsMegabyte: Double;
 begin
-  Result := Self.TamanhoArquivoAsKilobyte / FATOR_CONVERSAO_BYTE;
+  Result := TLib.KilobyteToMegabyte(Self.TamanhoArquivoAsKilobyte);
 end;
 
 end.
